@@ -4,7 +4,7 @@ const port = 3000
 var os = require('os');
 
 app.get('/', (req, res) => {
-  console.log(`hello we get request: ${req}`)
+  console.log(`hello, we get request: ${req}`)
   res.send(`Hello World! ${os.hostname()}`)
 })
 
