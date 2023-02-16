@@ -24,4 +24,4 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD 
 
     - name: Docker Push
-      run: docker push auliahanifan/hello-world
+      run: docker push auliahanifan/hello-world:${GITHUB_SHA::6}
