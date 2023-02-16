@@ -18,7 +18,7 @@ jobs:
       run: docker build . --file Dockerfile -t auliahanifan/hello-world:${GITHUB_SHA::6}
       
     - name: docker tag
-      run: docker tag auliahanifan/hello-world:${GITHUB_SHA::6} cloud.canister.io:5000/auliahanifan/hello-world
+      run: docker tag auliahanifan/hello-world:${GITHUB_SHA::6} cloud.canister.io:5000/auliahanifan/hello-world:${GITHUB_SHA::6}
     - name: docker login
       env:
         DOCKER_USERNAME: ${{secrets.CANISTER_USERNAME}}
@@ -27,4 +27,4 @@ jobs:
         docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD cloud.canister.io:5000
 
     - name: Docker Push
-      run: docker push cloud.canister.io:5000/auliahanifan/hello-world
+      run: docker push cloud.canister.io:5000/auliahanifan/hello-world:${GITHUB_SHA::6}
