@@ -15,13 +15,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag auliahanifan/hello-world:${GITHUB_SHA::6}
+      run: docker build . --file Dockerfile --tag cloud.canister.io:5000/auliahanifan/hello-world:${GITHUB_SHA::6}
     - name: docker login
       env:
-        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        DOCKER_USERNAME: ${{secrets.CANISTER_USERNAME}}
+        DOCKER_PASSWORD: ${{secrets.CANISTER_PASSWORD}}
       run: |
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD 
+        docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD cloud.canister.io:5000
 
     - name: Docker Push
-      run: docker push auliahanifan/hello-world:${GITHUB_SHA::6}
+      run: docker push cloud.canister.io:5000/auliahanifan/hello-world:${GITHUB_SHA::6}
