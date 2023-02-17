@@ -43,7 +43,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
               cd $DEPLOY_CONFIG_FOLDER
-              docker pull origin main
+              git pull origin main
               docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD cloud.canister.io:5000
               HELLO_TAG=${GITHUB_SHA::6} docker stack deploy -c hello-world.docker-compose.yml hello --with-registry-auth
               docker container rm $(docker ps --filter "status=exited")
