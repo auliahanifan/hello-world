@@ -34,7 +34,7 @@ jobs:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
           DEPLOY_CONFIG_FOLDER: ${{secrets.DEPLOY_CONFIG_FOLDER}}
-          HELLO_TAG: ${GITHUB_SHA::6}
+          HELLO_TAG: ${{github.sha::6}}
         with:
           host: ${{ secrets.SSH_SERVER }}
           username: ${{ secrets.SSH_USERNAME }}
