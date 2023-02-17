@@ -36,15 +36,17 @@ jobs:
           DOCKER_USERNAME: ${{secrets.CANISTER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.CANISTER_PASSWORD}}
           DEPLOY_CONFIG_FOLDER: ${{secrets.DEPLOY_CONFIG_FOLDER}}
+          HELLO_TAG: ${{GITHUB_SHA::6}}
         with:
           host: ${{ secrets.SSH_SERVER }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
+          envs: DOCKER_USERNAME,DOCKER_PASSWORD,DEPLOY_CONFIG_FOLDER,HELLO_TAG
           script: |
               cd $DEPLOY_CONFIG_FOLDER
               git pull origin main
               docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD cloud.canister.io:5000
-              HELLO_TAG=${GITHUB_SHA::6} docker stack deploy -c hello-world.docker-compose.yml hello --with-registry-auth
+              HELLO_TAG=$HELLO_TAG docker stack deploy -c hello-world.docker-compose.yml hello --with-registry-auth
               docker container rm $(docker ps --filter "status=exited")
               docker rmi $(docker images -q -f dangling=true)
