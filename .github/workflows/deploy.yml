@@ -45,5 +45,5 @@ jobs:
               cd $DEPLOY_CONFIG_FOLDER
               git pull origin main
               docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD 
-              cat $HELLO_TAG
+              printenv
               HELLO_TAG=$HELLO_TAG docker stack deploy -c hello-world.docker-compose.yml hello 
