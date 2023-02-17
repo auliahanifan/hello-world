@@ -25,3 +25,33 @@ jobs:
 
       - name: Docker Push
         run: docker push cloud.canister.io:5000/auliahanifan/hello-world:${GITHUB_SHA::6}
+  deploy_to_prod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: install ssh pass
+        run: sudo apt-get install sshpass
+      - name: ssh to server
+        env:
+          SSH_USERNAME: ${{secrets.SSH_USERNAME}}
+          SSH_PASSWORD: ${{secrets.SSH_PASSWORD}}
+          SSH_SERVER: ${{secrets.SSH_SERVER}}
+        run: sshpass -p $SSH_PASSWORD ssh $SSH_USERNAME@$SSH_SERVER
+      - name: go to configs folder
+        env:
+          DEPLOY_CONFIG_FOLDER: ${{secrets.DEPLOY_CONFIG_FOLDER}}
+        run: cd $DEPLOY_CONFIG_FOLDER
+      - name: update configs
+        run: git pull origin main
+      - name: login docker hub
+        env:
+          DOCKER_USERNAME: ${{secrets.CANISTER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.CANISTER_PASSWORD}}
+        run: |
+          docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD cloud.canister.io:5000
+      - name: Deploy
+        run: HELLO_TAG=${GITHUB_SHA::6} docker stack deploy -c hello-world.docker-compose.yml hello --with-registry-auth
+      - name: delete container unused
+        run: docker container rm $(docker ps --filter "status=exited")
+      - name: delete image unused
+        run: docker rmi $(docker images -q -f dangling=true)
