@@ -31,8 +31,8 @@ jobs:
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v0.1.7
         env:
-          DOCKER_USERNAME: ${{secrets.CANISTER_USERNAME}}
-          DOCKER_PASSWORD: ${{secrets.CANISTER_PASSWORD}}
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
           DEPLOY_CONFIG_FOLDER: ${{secrets.DEPLOY_CONFIG_FOLDER}}
           HELLO_TAG: ${GITHUB_SHA::6}
         with:
@@ -44,7 +44,5 @@ jobs:
           script: |
               cd $DEPLOY_CONFIG_FOLDER
               git pull origin main
-              docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD cloud.canister.io:5000
-              HELLO_TAG=$HELLO_TAG docker stack deploy -c hello-world.docker-compose.yml hello --with-registry-auth
-              docker container rm $(docker ps --filter "status=exited")
-              docker rmi $(docker images -q -f dangling=true)
+              docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD 
+              HELLO_TAG=$HELLO_TAG docker stack deploy -c hello-world.docker-compose.yml hello 
