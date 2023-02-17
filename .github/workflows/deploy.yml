@@ -26,6 +26,7 @@ jobs:
       - name: Docker Push
         run: docker push cloud.canister.io:5000/auliahanifan/hello-world:${GITHUB_SHA::6}
   deploy_to_prod:
+    needs: build_and_push_image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
