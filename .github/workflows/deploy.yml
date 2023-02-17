@@ -12,14 +12,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Extract tag name
+        id: tag
+        uses: actions/github-script@0.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return context.payload.ref.replace(/\/refs\/tags\//, '');
+      - name: Echo
+        run: echo ${{ steps.tag.outputs.result }}
       - name: Build the Docker image
-        run: docker build . --file Dockerfile -t auliahanifan/hello-world:${GITHUB_SHA::6}
+        run: docker build . --file Dockerfile -t auliahanifan/hello-world:${{ steps.tag.outputs.result }}
       - name: docker login
         env:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: |
-          docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD 
+          docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
 
       - name: Docker Push
         run: docker push auliahanifan/hello-world:${GITHUB_SHA::6}
@@ -34,16 +43,16 @@ jobs:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
           DEPLOY_CONFIG_FOLDER: ${{secrets.DEPLOY_CONFIG_FOLDER}}
-          GITHUB_SHA: ${{github.sha}}
+          GITHUB_TAG: ${{ steps.tag.outputs.result }}
         with:
           host: ${{ secrets.SSH_SERVER }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
-          envs: DOCKER_USERNAME,DOCKER_PASSWORD,DEPLOY_CONFIG_FOLDER,GITHUB_SHA
+          envs: DOCKER_USERNAME,DOCKER_PASSWORD,DEPLOY_CONFIG_FOLDER,GITHUB_TAG
           script: |
-              cd $DEPLOY_CONFIG_FOLDER
-              git pull origin main
-              docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD 
-              printenv
-              HELLO_TAG=${GITHUB_SHA::6} docker stack deploy -c hello-world.docker-compose.yml hello 
+            cd $DEPLOY_CONFIG_FOLDER
+            git pull origin main
+            docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD 
+            printenv
+            HELLO_TAG=$GITHUB_TAG docker stack deploy -c hello-world.docker-compose.yml hello
