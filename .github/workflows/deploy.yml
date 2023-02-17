@@ -15,7 +15,7 @@ jobs:
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
       - name: Echo
         run: echo ${{ steps.get_version.outputs.VERSION }}
-        
+
       - name: Build the Docker image
         run: docker build . --file Dockerfile -t auliahanifan/hello-world:${{ steps.get_version.outputs.VERSION }}
       - name: docker login
@@ -32,6 +32,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v0.1.7
         env:
