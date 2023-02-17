@@ -2,24 +2,24 @@ name: Deploy
 
 on:
   push:
-    branches: ["master"]
     tags:
       - v*
-
-  pull_request:
-    branches: ["master"]
-
 jobs:
   build_and_push_image:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+      - name: Exit if not on master branch
+        if: endsWith(github.ref, 'master') == false
+        run: exit -1
+        
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
       - name: Echo
         run: echo ${{ steps.get_version.outputs.VERSION }}
+        
       - name: Build the Docker image
         run: docker build . --file Dockerfile -t auliahanifan/hello-world:${{ steps.get_version.outputs.VERSION }}
       - name: docker login
@@ -30,7 +30,7 @@ jobs:
           docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD
 
       - name: Docker Push
-        run: docker push auliahanifan/hello-world:${GITHUB_SHA::6}
+        run: docker push auliahanifan/hello-world:${{ steps.get_version.outputs.VERSION }}
   deploy_to_prod:
     needs: build_and_push_image
     runs-on: ubuntu-latest
