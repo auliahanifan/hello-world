@@ -4,7 +4,7 @@ const port = 3000
 var os = require('os');
 
 var count = 0
-const version = process.env.VERSION || 'v3'
+const version = process.env.VERSION || 'v3 - private-registry '
 
 app.get('/', (req, res) => {
   console.log(`hello we get request: ${req} - ${version} - count hit ${count}`)
