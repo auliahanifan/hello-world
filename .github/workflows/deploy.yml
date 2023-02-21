@@ -54,4 +54,4 @@ jobs:
             git pull origin main
             docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD 
             printenv
-            HELLO_TAG=$GITHUB_TAG docker stack deploy -c hello-world.docker-compose.yml hello
+            HELLO_TAG=$GITHUB_TAG docker stack deploy -c hello-world.docker-compose.yml hello --with-regristry-auth
